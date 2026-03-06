@@ -1,0 +1,367 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -576,
+        64
+      ],
+      "id": "5b615d7e-b92a-400c-afc4-0656b9ccfb91",
+      "name": "Webhook",
+      "webhookId": "b18f7f87-11a1-49f7-9579-a21afb6fcb5d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agentInput || $node[\"Webhook\"].json.body.events[0].message.text }}",
+        "options": {
+          "systemMessage": "## 角色設定\n你是一個支援「文字與圖片」的 LINE 智慧助理。你具備專業的圖片分析能力、廣告文案生成技巧，並能透過對話紀錄（Chat History）維持長期記憶。\n\n## 📌【1】多模態處理規則\n- **優先級**：圖片 > 文字需求 > 歷史記憶。\n- **純圖片**：收到圖片時，先回覆「我收到照片了，正在為您分析...」，接著詳細描述內容並主動生成一個吸引人的廣告文案（繁體中文，約 50 字）。\n- **純文字**：\n    - 若文字與「之前的圖片」相關（如：幫我改剛才那張圖的文案），請檢索 Chat History 並針對該圖片進行二次加工。\n    - 若是一般對話，則有禮貌地回答。\n- **圖文並茂**：同時分析圖片並針對使用者的文字要求（如：指定文案風格）進行處理。\n\n## 📌【2】對話記憶與風格\n- **記憶利用**：你必須參考對話紀錄。如果使用者問「你有看到剛剛的照片嗎？」，請根據你之前的分析回報，不要說你看不見。\n- **語言限制**：一律使用「繁體中文」。\n- **回覆風格**：專業、有禮、自然。針對需求給結果，針對疑惑給建議。\n- **長度控制**：訊息要精簡好讀，適度換行。\n\n## 📌【3】禁止事項\n- 禁止要求使用者提供 OpenAI、Google 雲端或 Imgur 等外部 URL。\n- 禁止提到 n8n、ngrok 或任何技術開發相關的錯誤訊息。\n- 若圖片真的無法辨識，請禮貌告知並請使用者重新上傳，不要胡扯。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        192,
+        -144
+      ],
+      "id": "a4855723-6905-45ae-9e8b-70144896c1ef",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        96,
+        16
+      ],
+      "id": "cac7b022-7577-45dc-b933-2e5f1bf8054f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mmcbjMfStRTD9cF5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.userId || $node[\"Webhook\"].json.body.events[0].source.userId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        16
+      ],
+      "id": "56e8f7ca-dbb0-4ebd-9db4-0f0fe7528f62",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        0
+      ],
+      "id": "905a8aee-1640-4471-b213-afdd2d5490d9",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "7Cn5it9ynFZGS3XI",
+          "name": "n8n-google_sheet-line"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": \"{{ $node[\"Webhook\"].json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": {{ JSON.stringify($node[\"AI Agent\"].json.output) }}\n    }\n  ]\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        624,
+        80
+      ],
+      "id": "8a2c2302-c6fb-4505-abb0-fc105f9c061b",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6fgOwnSLOMfZc2g0",
+          "name": "Line官方回覆"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "957194cc-ad13-453f-8daf-498c83d4cb94",
+              "leftValue": "={{ $json.body.events[0].message.type }}",
+              "rightValue": "image",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -432,
+        64
+      ],
+      "id": "b6476f36-d096-4bac-b647-82391a1f3892",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "=https://api-data.line.me/v2/bot/message/{{$json.body.events[0].message.id}}/content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -208,
+        -176
+      ],
+      "id": "b7da8cbf-96b0-4a71-bb30-104a01a37698",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6fgOwnSLOMfZc2g0",
+          "name": "Line官方回覆"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 確保將所有內容包裹在一個陣列中回傳\nreturn [\n  {\n    json: {\n      // 這是傳給 AI Agent 的文字指令\n      agentInput: \"這是一張使用者上傳的照片，請分析內容並生成一段廣告文案。\",\n      // 確保將 userId 傳遞下去，維持 Simple Memory 的記憶功能\n      userId: $node[\"Webhook\"].json.body.events[0].source.userId,\n      replyToken: $node[\"Webhook\"].json.body.events[0].replyToken\n    },\n    // 務必保留 binary，否則 AI 會看不見照片\n    binary: $input.item.binary \n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        -176
+      ],
+      "id": "5ec8d0ee-bb11-4b00-a431-e9cf91d8ff75",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "53611c0b-6c60-44e5-9e10-62c13e706e6b",
+              "name": "userId",
+              "value": "={{ $node[\"Webhook\"].json.body.events[0].source.userId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        -16
+      ],
+      "id": "50bda1ef-8d47-4f8f-838a-7cede2566147",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a82c27bd-c40a-46f2-b6ba-0cc886d60304",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "afcb99b91ab3a4ac11f28663aecdee6849d6f57b5fedb0f460e4ec9121be7015"
+  },
+  "id": "35q7jn1LWkXsaEP7",
+  "tags": []
+}
