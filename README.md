@@ -4,6 +4,7 @@
 
 快速開始：匯入 JSON 檔後，請至 Credentials 設定 API Key。
 
+```mermaid
 sequenceDiagram
     autonumber
     participant U as User (LINE App)
@@ -45,3 +46,4 @@ sequenceDiagram
     G-->>N: 回傳廣告文案
     N->>L: HTTP Request (Push Message)
     L->>U: 顯示生成結果
+```mermaid
