@@ -1,0 +1,825 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1408,
+        -464
+      ],
+      "id": "5b615d7e-b92a-400c-afc4-0656b9ccfb91",
+      "name": "Webhook",
+      "webhookId": "b18f7f87-11a1-49f7-9579-a21afb6fcb5d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=[長期記憶摘要]: {{ $json.output || \"目前無摘要\" }}\n[當前用戶輸入]: {{ $json.message || \"處理圖片中\" }}\n[指令]: 根據以上資料產出廣告文案。",
+        "options": {
+          "systemMessage": "## 角色設定\n你是一個支援「文字與圖片」的 LINE 智慧助理。你具備專業的圖片分析能力、廣告文案生成技巧，並能透過對話紀錄（Chat History）維持長期記憶。\n\n## 📌【1】多模態處理規則\n- **優先級**：圖片 > 文字需求 > 歷史記憶。\n- **純圖片**：收到圖片時，先回覆「我收到照片了，正在為您分析...」，接著詳細描述內容並主動生成一個吸引人的廣告文案（繁體中文，約 50 字）。\n- **純文字**：\n    - 若文字與「之前的圖片」相關（如：幫我改剛才那張圖的文案），請檢索 Chat History 並針對該圖片進行二次加工。\n    - 若是一般對話，則有禮貌地回答。\n- **圖文並茂**：同時分析圖片並針對使用者的文字要求（如：指定文案風格）進行處理。\n\n## 📌【2】對話記憶與風格\n- **記憶利用**：你必須參考對話紀錄。如果使用者問「你有看到剛剛的照片嗎？」，請根據你之前的分析回報，不要說你看不見。\n- **語言限制**：一律使用「繁體中文」。\n- **回覆風格**：專業、有禮、自然。針對需求給結果，針對疑惑給建議。\n- **長度控制**：訊息要精簡好讀，適度換行。\n\n## 📌【3】禁止事項\n- 禁止要求使用者提供 OpenAI、Google 雲端或 Imgur 等外部 URL。\n- 禁止提到 n8n、ngrok 或任何技術開發相關的錯誤訊息。\n- 若圖片真的無法辨識，請禮貌告知並請使用者重新上傳，不要胡扯。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        848,
+        -416
+      ],
+      "id": "a4855723-6905-45ae-9e8b-70144896c1ef",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -256
+      ],
+      "id": "cac7b022-7577-45dc-b933-2e5f1bf8054f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mmcbjMfStRTD9cF5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.userId || $node[\"Webhook\"].json.body.events[0].source.userId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        -240
+      ],
+      "id": "56e8f7ca-dbb0-4ebd-9db4-0f0fe7528f62",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        992,
+        -240
+      ],
+      "id": "905a8aee-1640-4471-b213-afdd2d5490d9",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "7Cn5it9ynFZGS3XI",
+          "name": "n8n-google_sheet-line"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": \"{{ $node[\"Webhook\"].json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": {{ JSON.stringify($node[\"AI Agent\"].json.output) }}\n    }\n  ]\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1136,
+        -176
+      ],
+      "id": "8a2c2302-c6fb-4505-abb0-fc105f9c061b",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6fgOwnSLOMfZc2g0",
+          "name": "Line官方回覆"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "957194cc-ad13-453f-8daf-498c83d4cb94",
+              "leftValue": "={{ $json.body.events[0].message.type }}",
+              "rightValue": "image",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1200,
+        -448
+      ],
+      "id": "b6476f36-d096-4bac-b647-82391a1f3892",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "=https://api-data.line.me/v2/bot/message/{{$json.body.events[0].message.id}}/content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1088,
+        -592
+      ],
+      "id": "b7da8cbf-96b0-4a71-bb30-104a01a37698",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6fgOwnSLOMfZc2g0",
+          "name": "Line官方回覆"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message: \"這是一張使用者上傳的照片，請分析內容並生成一段廣告文案。\", // 改成 message\n      userId: $node[\"Webhook\"].json.body.events[0].source.userId,\n      replyToken: $node[\"Webhook\"].json.body.events[0].replyToken\n    },\n    binary: $input.item.binary\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -928,
+        -640
+      ],
+      "id": "5ec8d0ee-bb11-4b00-a431-e9cf91d8ff75",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "53611c0b-6c60-44e5-9e10-62c13e706e6b",
+              "name": "userId",
+              "value": "={{ $node[\"Webhook\"].json.body.events[0].source.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "12dd2bc2-254a-4cc0-a79b-86d7d7b2348d",
+              "name": "message",
+              "value": "={{ $node[\"Webhook\"].json.body.events[0].message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -912,
+        -352
+      ],
+      "id": "50bda1ef-8d47-4f8f-838a-7cede2566147",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1155841467#gid=1155841467",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Chat_History",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "userId": "={{ $node[\"Webhook\"].json.body.events[0].source.userId }}",
+            "content": "={{ $json.content?.parts?.[0]?.text || $json.message || \"收到訊息\" }}",
+            "role": "user",
+            "timestamp": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "userId",
+              "displayName": "userId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -384,
+        -704
+      ],
+      "id": "4e0ef55d-b229-4e30-8f2e-1bb228f66688",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "7Cn5it9ynFZGS3XI",
+          "name": "n8n-google_sheet-line"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const history = items;\nreturn {\n  shouldSummarize: history.length >= 10,\n  historyText: history.map(i => `${i.json.role}: ${i.json.content}`).join('\\n')\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -672
+      ],
+      "id": "75f00572-5c91-4c04-82f9-2042d730cc12",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Chat_History",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "userId",
+              "lookupValue": "={{ $json.userId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -208,
+        -720
+      ],
+      "id": "94941c49-d681-4ffa-8e02-5a61dd5d4484",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "7Cn5it9ynFZGS3XI",
+          "name": "n8n-google_sheet-line"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "00f54eee-d9f4-4e96-961e-51ed056e4a4f",
+              "leftValue": "={{ $json.shouldSummarize }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        -656
+      ],
+      "id": "4df8ffaf-6c77-4a71-9bf3-decac41f424e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=你是一個專業的用戶畫像分析師。以下是過去 10 輪的對話紀錄：\n{{ $node[\"Code in JavaScript1\"].json[\"historyText\"] }}\n請提煉出該用戶的：1. 興趣愛好 2. 購買意圖 3. 提到的硬體規格。\n請務必僅以 JSON 格式回傳，格式如下：{\"interest\": \"...\", \"intent\": \"...\", \"specs\": \"...\"}，不要包含任何額外解釋文字。"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -656
+      ],
+      "id": "033fcf68-6d05-492e-a663-6fead6fe346a",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mmcbjMfStRTD9cF5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1155841467#gid=1155841467",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1155841467,
+          "mode": "list",
+          "cachedResultName": "Long_Term_Summary",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1155841467"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "userId": "={{ $node[\"Webhook\"].json.body.events[0].source.userId }}",
+            "summary": "={{ $json.content.parts[0].text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "userId",
+              "displayName": "userId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        -624
+      ],
+      "id": "98b52c31-940c-42de-aad8-cad25991d9ee",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleApi": {
+          "id": "7Cn5it9ynFZGS3XI",
+          "name": "n8n-google_sheet-line"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          },
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        -432
+      ],
+      "id": "bddd1f44-35d2-4374-b300-376d5f228550",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "請用 15 個字以內描述這張圖片的主體。例如：『一張顯示卡的近照』或『淡江大學的校園』。不要贅詞。",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -800
+      ],
+      "id": "dc0df0ee-2db0-4afd-9143-2ccf9c800ed6",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mmcbjMfStRTD9cF5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          },
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -576,
+        -736
+      ],
+      "id": "9ff12398-d775-4a5c-9e8a-d2559fd93355",
+      "name": "Merge1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dcd88216-e535-4979-8af4-5804c44ce691",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "afcb99b91ab3a4ac11f28663aecdee6849d6f57b5fedb0f460e4ec9121be7015"
+  },
+  "id": "35q7jn1LWkXsaEP7",
+  "tags": []
+}
