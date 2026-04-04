@@ -3,6 +3,12 @@
 環境需求：需準備 n8n, LINE Developers 帳號, 以及 Gemini API。
 
 快速開始：匯入 JSON 檔後，請至 Credentials 設定 API Key。
+### 📁 最新版本下載
+- [點我下載最新工作流 (v2.0)](./n8n-linebot-v2.json)
+
+### ⚠️ 注意事項
+- 舊版 `n8n-linebot.json` 僅供存檔，請優先使用 v2.0。
+- 導入後請確認 `Merge` 節點的 `Include Any Unpaired Items` 已開啟。
 
 ### 系統時序圖 (Sequence Diagram)
 
