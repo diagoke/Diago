@@ -14,8 +14,7 @@
         -528
       ],
       "id": "5b615d7e-b92a-400c-afc4-0656b9ccfb91",
-      "name": "Webhook",
-      "webhookId": "b18f7f87-11a1-49f7-9579-a21afb6fcb5d"
+      "name": "Webhook"
     },
     {
       "parameters": {
@@ -50,8 +49,8 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "mmcbjMfStRTD9cF5",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL"
         }
       }
     },
@@ -80,8 +79,8 @@
       "name": "HTTP Request",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "6fgOwnSLOMfZc2g0",
-          "name": "Line官方回覆"
+          "id": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL"
         }
       }
     },
@@ -167,7 +166,7 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1155841467#gid=1155841467",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -175,7 +174,7 @@
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Chat_History",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -241,8 +240,8 @@
       "name": "Append row in sheet",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -264,7 +263,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -272,7 +271,7 @@
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Chat_History",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "filtersUI": {
           "values": [
@@ -294,8 +293,8 @@
       "name": "Get row(s) in sheet",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -361,8 +360,8 @@
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "mmcbjMfStRTD9cF5",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL"
         }
       }
     },
@@ -413,8 +412,8 @@
       "name": "Analyze an image",
       "credentials": {
         "googlePalmApi": {
-          "id": "mmcbjMfStRTD9cF5",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL"
         }
       }
     },
@@ -470,8 +469,8 @@
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "mmcbjMfStRTD9cF5",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEPALMAPI_CREDENTIAL"
         }
       }
     },
@@ -514,7 +513,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1690961429#gid=1690961429",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -522,7 +521,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -569,8 +568,8 @@
       "name": "Append or update row in sheet",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -579,7 +578,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -587,7 +586,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "filtersUI": {
           "values": [
@@ -610,8 +609,8 @@
       "alwaysOutputData": true,
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -621,7 +620,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1690961429#gid=1690961429",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -629,7 +628,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -686,8 +685,8 @@
       "name": "Append or update row in sheet1",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -697,7 +696,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1690961429#gid=1690961429",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -705,7 +704,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -772,8 +771,8 @@
       "name": "Append or update row in sheet2",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -782,7 +781,7 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1690961429#gid=1690961429",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -790,7 +789,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "combineFilters": "OR",
         "options": {}
@@ -805,8 +804,8 @@
       "name": "Get row(s) in sheet2",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -936,7 +935,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=1690961429#gid=1690961429",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -944,7 +943,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -1011,8 +1010,8 @@
       "name": "Append or update row in sheet3",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -1045,8 +1044,8 @@
       "name": "HTTP Request1",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "6fgOwnSLOMfZc2g0",
-          "name": "Line官方回覆"
+          "id": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL"
         }
       }
     },
@@ -1080,8 +1079,8 @@
       "name": "HTTP Request2",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "6fgOwnSLOMfZc2g0",
-          "name": "Line官方回覆"
+          "id": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL"
         }
       }
     },
@@ -1115,8 +1114,8 @@
       "name": "HTTP Request3",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "6fgOwnSLOMfZc2g0",
-          "name": "Line官方回覆"
+          "id": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL"
         }
       }
     },
@@ -1160,7 +1159,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -1168,7 +1167,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -1234,8 +1233,8 @@
       "name": "Append or update row in sheet4",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -1269,8 +1268,8 @@
       "name": "HTTP Request4",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "6fgOwnSLOMfZc2g0",
-          "name": "Line官方回覆"
+          "id": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL"
         }
       }
     },
@@ -1280,7 +1279,7 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit?gid=0#gid=0",
+          "value": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit",
           "mode": "url"
         },
         "sheetName": {
@@ -1288,7 +1287,7 @@
           "value": 1690961429,
           "mode": "list",
           "cachedResultName": "User_Config",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SxEzU5SGoO0CBrPJeNwy-PA8dn_mvEleJ8npQE7XiH0/edit#gid=1690961429"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -1355,8 +1354,8 @@
       "name": "Append or update row in sheet5",
       "credentials": {
         "googleApi": {
-          "id": "7Cn5it9ynFZGS3XI",
-          "name": "n8n-google_sheet-line"
+          "id": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLEAPI_CREDENTIAL"
         }
       }
     },
@@ -1390,8 +1389,8 @@
       "name": "HTTP Request5",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "6fgOwnSLOMfZc2g0",
-          "name": "Line官方回覆"
+          "id": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_HTTPHEADERAUTH_CREDENTIAL"
         }
       }
     }
